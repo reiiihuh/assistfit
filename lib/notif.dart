@@ -29,18 +29,25 @@ class NotificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60.0), // Tinggi appbar
-        child: AppBar(
-          automaticallyImplyLeading: false, // Remove the back arrow
-          title: Image.asset(
-            'images/logo1.png', // Ganti dengan path logo Anda
-            fit: BoxFit.contain,
-            height: 15,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: false,
+        titleSpacing: 0,
+        title: const Text(
+          'Notification',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
           ),
-          backgroundColor: Colors.white,
-          elevation: 8.0, // Menambahkan shadow
-          shadowColor: Colors.black.withOpacity(0.5), // Warna bayangan
+        ),
+        iconTheme: const IconThemeData(color: Colors.black),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
       body: ListView.builder(

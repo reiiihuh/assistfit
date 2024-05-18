@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mockup_assistfit/bottomnavbar.dart';
 import 'package:mockup_assistfit/upload.dart';
+import 'package:mockup_assistfit/uploadbap1.dart';
 
 class UploadBAPP extends StatelessWidget {
   @override
@@ -89,12 +90,11 @@ class TaskListScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            if (tasks[index].date == '8 April 2024') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const UploadPage()),
-              );
-            }
+            // Mengarahkan semua card ke UploadPage
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UploadBAPScreen()),
+            );
           },
           child: TaskCard(task: tasks[index]),
         );

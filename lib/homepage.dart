@@ -241,7 +241,7 @@ class HomePage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Container(
-            width: 100, // Set a fixed width
+            width: 85, // Set a fixed width
             child: Text(
               label,
               textAlign: TextAlign.center,

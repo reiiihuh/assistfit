@@ -151,19 +151,32 @@ class _LoginPageState extends State<LoginPage> {
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              title: const Text('Login gagal!'),
+                                              title: const Text(
+                                                'Login gagal!',
+                                                style: TextStyle(
+                                                  color: Colors.green,
+                                                ),
+                                              ),
                                               content: const Text(
-                                                  'Akun kamu tidak terdaftar menjadi asprak, silahkan ke Lab FIT lt 1'),
+                                                'Akun kamu tidak terdaftar menjadi asprak, silahkan ke Lab FIT lt 1',
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              backgroundColor: Colors.white,
                                               actions: <Widget>[
                                                 TextButton(
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: const Text('OK',
-                                                      style: TextStyle(
-                                                          color: Colors.red,
-                                                          fontWeight:
-                                                              FontWeight.bold)),
+                                                  child: const Text(
+                                                    'OK',
+                                                    style: TextStyle(
+                                                      color: Colors.green,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
                                                 ),
                                               ],
                                             );

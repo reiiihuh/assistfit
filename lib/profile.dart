@@ -1,10 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:mockup_assistfit/bottomnavbar.dart';
+import 'package:mockup_assistfit/edit.dart';
 import 'package:mockup_assistfit/help.dart';
 import 'package:mockup_assistfit/homepage.dart';
+import 'package:mockup_assistfit/login.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
+
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel',
+              style: TextStyle(color: Colors.grey)
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text(
+                'Logout',
+                style: TextStyle(color: Colors.green),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +113,10 @@ class ProfilePage extends StatelessWidget {
                 icon: Icons.edit,
                 label: 'Edit',
                 onTap: () {
-                  // Handle edit action
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const EditScreen()),
+                  );
                 },
               ),
               ProfileAction(
@@ -84,8 +124,8 @@ class ProfilePage extends StatelessWidget {
                 label: 'Help',
                 onTap: () {
                   Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const HelpScreen()),
+                    context,
+                    MaterialPageRoute(builder: (context) => const HelpScreen()),
                   );
                 },
               ),
@@ -93,7 +133,7 @@ class ProfilePage extends StatelessWidget {
                 icon: Icons.logout,
                 label: 'Logout',
                 onTap: () {
-                  // Handle logout action
+                  _showLogoutConfirmation(context);
                 },
               ),
             ],

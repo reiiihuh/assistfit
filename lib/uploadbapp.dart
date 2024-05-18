@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mockup_assistfit/bottomnavbar.dart';
-import 'package:mockup_assistfit/upload.dart';
 import 'package:mockup_assistfit/uploadbap1.dart';
 
 class UploadBAPP extends StatelessWidget {

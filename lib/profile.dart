@@ -1,8 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:mockup_assistfit/bottomnavbar.dart';
+import 'package:mockup_assistfit/edit.dart';
+import 'package:mockup_assistfit/help.dart';
+import 'package:mockup_assistfit/homepage.dart';
+import 'package:mockup_assistfit/login.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
+
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel',
+              style: TextStyle(color: Colors.grey)
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text(
+                'Logout',
+                style: TextStyle(color: Colors.green),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,70 +63,81 @@ class ProfilePage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Center(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: AssetImage('images/fotoprofile.jpeg'),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Ahra Dhanindya',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Center(
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: AssetImage('images/fotoprofile.jpeg'),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 10),
+                    Text(
+                      'Ahra Dhanindya',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            const ProfileDetail(
-              label: 'Email SSO',
-              value: 'reihan@student.telkomuniversity.ac.id',
-            ),
-            const SizedBox(height: 10),
-            const ProfileDetail(
-              label: 'Phone Number',
-              value: '0881024111000',
-            ),
-            const SizedBox(height: 10),
-            const ProfileDetail(
-              label: 'Account Number',
-              value: '778899102233',
-            ),
-            const SizedBox(height: 30),
-            ProfileAction(
-              icon: Icons.edit,
-              label: 'Edit',
-              onTap: () {
-                // Handle edit action
-              },
-            ),
-            ProfileAction(
-              icon: Icons.help,
-              label: 'Help',
-              onTap: () {
-                // Handle help action
-              },
-            ),
-            ProfileAction(
-              icon: Icons.logout,
-              label: 'Logout',
-              onTap: () {
-                // Handle logout action
-              },
-            ),
-          ],
+              const SizedBox(height: 20),
+              const ProfileDetail(
+                label: 'Email SSO',
+                value: 'reihan@student.telkomuniversity.ac.id',
+              ),
+              const SizedBox(height: 10),
+              const ProfileDetail(
+                label: 'Phone Number',
+                value: '0881024111000',
+              ),
+              const SizedBox(height: 10),
+              const ProfileDetail(
+                label: 'Account Number',
+                value: '778899102233',
+              ),
+              const SizedBox(height: 30),
+              ProfileAction(
+                icon: Icons.edit,
+                label: 'Edit',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const EditScreen()),
+                  );
+                },
+              ),
+              ProfileAction(
+                icon: Icons.help,
+                label: 'Help',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HelpScreen()),
+                  );
+                },
+              ),
+              ProfileAction(
+                icon: Icons.logout,
+                label: 'Logout',
+                onTap: () {
+                  _showLogoutConfirmation(context);
+                },
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: const BottomNav(),
@@ -139,10 +189,7 @@ class ProfileAction extends StatelessWidget {
   final VoidCallback onTap;
 
   const ProfileAction(
-      {super.key,
-      required this.icon,
-      required this.label,
-      required this.onTap});
+      {super.key, required this.icon, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

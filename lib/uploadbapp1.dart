@@ -129,6 +129,32 @@ class UploadBAPP1 extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 16),
+            // Note section
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(16),
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'NOTE:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Kolom paraf asprak dan tanda tangan koordinator dosen mata kuliah harap dikosongkan terlebih dahulu karena harus tanda tangan basah.',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

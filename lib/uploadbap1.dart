@@ -6,6 +6,7 @@ void main() {
   runApp(MyApp());
 }
 
+// Main application widget
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Screen widget for uploading BAP
 class UploadBAPScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -40,6 +42,7 @@ class UploadBAPScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Header row with icon and title
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -74,6 +77,7 @@ class UploadBAPScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 16),
+            // Container for file upload area
             Container(
               height: 200,
               decoration: BoxDecoration(
@@ -85,7 +89,7 @@ class UploadBAPScreen extends StatelessWidget {
                     color: Colors.green.withOpacity(0.5),
                     spreadRadius: 5,
                     blurRadius: 7,
-                    offset: Offset(0, 3), // changes position of shadow
+                    offset: Offset(0, 3), // Changes position of shadow
                   ),
                 ],
               ),
@@ -112,6 +116,7 @@ class UploadBAPScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16),
+            // Submit button
             Center(
               child: ElevatedButton(
                 onPressed: () {
@@ -129,10 +134,44 @@ class UploadBAPScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 16),
+            // Note section
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(16),
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'NOTE:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Kolom paraf asprak dan tanda tangan koordinator dosen mata kuliah harap dikosongkan terlebih dahulu karena harus tanda tangan basah.',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNav(),
+      bottomNavigationBar: BottomNav(), // Custom bottom navigation bar
     );
   }
 }
+
+// Notes:
+// 1. The `UploadBAPScreen` widget provides a UI for uploading BAP files with a deadline indicator.
+// 2. The file upload area is currently static. You need to implement the functionality to allow users to upload files.
+// 3. The submit button does not perform any action at the moment. Add the necessary logic to handle file submission.
+// 4. The `BottomNav` widget is assumed to be a custom bottom navigation bar imported from another file.
+// 5. Adjust the padding, colors, and other UI elements as needed to fit the overall design of your application.
+// 6. Ensure all necessary packages are included in your `pubspec.yaml` file for the app to function correctly.

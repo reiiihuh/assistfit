@@ -6,6 +6,7 @@ void main() {
   runApp(MyApp());
 }
 
+// Main application widget
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Screen widget for uploading BAP
 class UploadBAPP1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -22,17 +24,11 @@ class UploadBAPP1 extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
-        title: Text(
+        title: const Text(
           'Upload BAPP',
           style: TextStyle(
             color: Colors.black,
           ),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
         ),
       ),
       body: Padding(
@@ -40,7 +36,8 @@ class UploadBAPP1 extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            // Header row with icon and title
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
@@ -73,7 +70,8 @@ class UploadBAPP1 extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
+            // Container for file upload area
             Container(
               height: 200,
               decoration: BoxDecoration(
@@ -85,11 +83,11 @@ class UploadBAPP1 extends StatelessWidget {
                     color: Colors.green.withOpacity(0.5),
                     spreadRadius: 5,
                     blurRadius: 7,
-                    offset: Offset(0, 3), // changes position of shadow
+                    offset: const Offset(0, 3), // Changes position of shadow
                   ),
                 ],
               ),
-              child: Center(
+              child: const Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -111,31 +109,22 @@ class UploadBAPP1 extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 16),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Implement submit button functionality here
-                },
-                child: Text('Submit'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  backgroundColor:
-                      Colors.green, // Match the color of download button
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(30.0), // Match the border radius
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
+            // Submit button
+            const SizedBox(height: 16),
             // Note section
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(16),
-              color: Colors.white,
-              child: Column(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Color.fromARGB(255, 202, 202, 202), // Border color
+                  width: 1.0, // Border width
+                ),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -155,10 +144,30 @@ class UploadBAPP1 extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Implement submit button functionality here
+                },
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0), // Border color
+                  ),
+                ),
+                child: const Text(
+                  'Submit',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNav(),
+      bottomNavigationBar: const BottomNav(), // Custom bottom navigation bar
     );
   }
 }

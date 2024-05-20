@@ -3,6 +3,8 @@ import 'package:mockup_assistfit/bottomnavbar.dart';
 import 'package:mockup_assistfit/uploadbapp1.dart';
 
 class UploadBAP extends StatelessWidget {
+  const UploadBAP({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -11,20 +13,13 @@ class UploadBAP extends StatelessWidget {
         elevation: 0,
         centerTitle: false,
         titleSpacing: 0,
-        title: Text(
+        title: const Text(
           'Upload BAP dan BAPP',
           style: TextStyle(
             color: Colors.black,
             fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
-        ),
-        iconTheme: IconThemeData(color: Colors.black),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
         ),
       ),
       body: Padding(
@@ -34,7 +29,7 @@ class UploadBAP extends StatelessWidget {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: Color.fromARGB(
+                color: const Color.fromARGB(
                     255, 200, 196, 196), // Background warna abu-abu
                 borderRadius: BorderRadius.circular(10.0),
               ),
@@ -48,8 +43,8 @@ class UploadBAP extends StatelessWidget {
                       width: 400, // Lebar gambar
                       height: 100, // Tinggi gambar
                     ),
-                    SizedBox(height: 8),
-                    Text(
+                    const SizedBox(height: 8),
+                    const Text(
                       'Upload BAPP', // Tulisan di bawah logo1
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -62,14 +57,14 @@ class UploadBAP extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(
               child: TaskListScreen(),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNav(),
+      bottomNavigationBar: const BottomNav(),
     );
   }
 }
@@ -92,7 +87,7 @@ class TaskListScreen extends StatelessWidget {
             // Mengarahkan semua card ke UploadBAPScreen
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => UploadBAPP1()),
+              MaterialPageRoute(builder: (context) => const UploadBAPP1()),
             );
           },
           child: TaskCard(task: tasks[index]),
@@ -116,20 +111,20 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.assignment, size: 40),
-                SizedBox(width: 16),
+                const Icon(Icons.assignment, size: 40),
+                const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Tugas baru : BAPP Mingguan',
                       style: TextStyle(
                         fontSize: 16,
@@ -138,14 +133,14 @@ class TaskCard extends StatelessWidget {
                     ),
                     Text(
                       task.date,
-                      style: TextStyle(fontSize: 14),
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ],
                 ),
               ],
             ),
-            SizedBox(height: 8),
-            Text(
+            const SizedBox(height: 8),
+            const Text(
               'Tambahkan komentar',
               style: TextStyle(color: Colors.grey),
             ),

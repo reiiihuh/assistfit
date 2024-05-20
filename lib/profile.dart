@@ -17,9 +17,7 @@ class ProfilePage extends StatelessWidget {
           content: const Text('Are you sure you want to logout?'),
           actions: [
             TextButton(
-              child: const Text('Cancel',
-              style: TextStyle(color: Colors.grey)
-              ),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -58,16 +56,6 @@ class ProfilePage extends StatelessWidget {
             fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );
-          },
         ),
       ),
       body: SingleChildScrollView(
@@ -189,7 +177,10 @@ class ProfileAction extends StatelessWidget {
   final VoidCallback onTap;
 
   const ProfileAction(
-      {super.key, required this.icon, required this.label, required this.onTap});
+      {super.key,
+      required this.icon,
+      required this.label,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {

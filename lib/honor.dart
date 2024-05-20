@@ -18,13 +18,6 @@ class HonorPage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        iconTheme: IconThemeData(color: Colors.black),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: Center(
         child: Padding(
@@ -72,8 +65,22 @@ class HonorPage extends StatelessWidget {
                       SizedBox(height: 20),
                       Center(
                         child: ElevatedButton(
-                          onPressed: () {},
-                          child: Text('Download'),
+                          onPressed: () {
+                            // Implement submit button functionality here
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 12),
+                            backgroundColor: Colors.green,
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(30.0), // Border color
+                            ),
+                          ),
+                          child: const Text(
+                            'Download',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ],

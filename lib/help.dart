@@ -8,12 +8,6 @@ class HelpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         title: const Text('Help'),
       ),
       body: Center(
@@ -26,7 +20,7 @@ class HelpScreen extends StatelessWidget {
                 height: 200,
                 width: 200,
                 child: Image.asset(
-                  'images/help.png', 
+                  'images/help.png',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -51,7 +45,8 @@ class HelpScreen extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
                   ),

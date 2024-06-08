@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'homepage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -123,60 +125,81 @@ class _LoginPageState extends State<LoginPage> {
                             const SizedBox(height: 20.0),
                             ElevatedButton(
                               onPressed: _isButtonEnabled
-                                  ? () {
-                                      String username =
-                                          _usernameController.text;
+                                  ? () async {
+                                      String sso = _usernameController.text;
                                       String password =
                                           _passwordController.text;
 
-                                      if ((username ==
-                                                  "ahra@student.telkomuniversity.ac.id" &&
-                                              password == "6701223079") ||
-                                          (username ==
-                                                  "fadli@student.telkomuniversity.ac.id" &&
-                                              password == "6701220024") ||
-                                          (username ==
-                                                  "reihan@student.telkomuniversity.ac.id" &&
-                                              password == "6701220122") ||
-                                          (username == "admin" &&
-                                              password == "123")) {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => HomePage(),
-                                          ),
+                                      try {
+                                        var response = await http.post(
+                                          Uri.parse(
+                                              'http://192.168.1.11/login/api/login.php'),
+                                          headers: <String, String>{
+                                            'Content-Type':
+                                                'application/json; charset=UTF-8',
+                                          },
+                                          body: jsonEncode(<String, String>{
+                                            'sso': sso,
+                                            'password': password,
+                                          }),
                                         );
-                                      } else {
+
+                                        var responseBody =
+                                            json.decode(response.body);
+
+                                        if (response.statusCode == 200 &&
+                                            responseBody['value'] == 1) {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => HomePage(),
+                                            ),
+                                          );
+                                        } else {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title:
+                                                    const Text('Login gagal!'),
+                                                content: const Text(
+                                                    'Akun kamu tidak terdaftar menjadi asprak, silahkan ke Lab FIT lt 1'),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: const Text('OK',
+                                                        style: TextStyle(
+                                                            color: Colors.red,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold)),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        }
+                                      } catch (e) {
                                         showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              title: const Text(
-                                                'Login gagal!',
-                                                style: TextStyle(
-                                                  color: Colors.green,
-                                                ),
-                                              ),
-                                              content: const Text(
-                                                'Akun kamu tidak terdaftar menjadi asprak, silahkan ke Lab FIT lt 1',
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                              backgroundColor: Colors.white,
+                                              title: const Text('Error'),
+                                              content: Text(
+                                                  'Could not connect to server: $e'),
                                               actions: <Widget>[
                                                 TextButton(
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: const Text(
-                                                    'OK',
-                                                    style: TextStyle(
-                                                      color: Colors.green,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
+                                                  child: const Text('OK',
+                                                      style: TextStyle(
+                                                          color: Colors.red,
+                                                          fontWeight:
+                                                              FontWeight.bold)),
                                                 ),
                                               ],
                                             );

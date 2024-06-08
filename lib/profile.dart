@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mockup_assistfit/bottomnavbar.dart';
 import 'package:mockup_assistfit/edit.dart';
 import 'package:mockup_assistfit/help.dart';
-import 'package:mockup_assistfit/homepage.dart';
 import 'package:mockup_assistfit/login.dart';
 
 class ProfilePage extends StatelessWidget {

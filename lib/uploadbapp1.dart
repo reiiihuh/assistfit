@@ -1,12 +1,16 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:mockup_assistfit/bottomnavbar.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
+import 'bottomnavbar.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() {
   runApp(MyApp());
 }
 
-// Main application widget
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -16,8 +20,97 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Screen widget for uploading BAP
-class UploadBAPP1 extends StatelessWidget {
+class UploadBAPP1 extends StatefulWidget {
+  @override
+  _UploadBAPP1State createState() => _UploadBAPP1State();
+}
+
+class _UploadBAPP1State extends State<UploadBAPP1> {
+  File? _file;
+  Uint8List? _fileBytes;
+  bool _isLoading = false;
+  String? _fileName;
+  bool _isFileSelected = false;
+
+  void _clearFile() {
+    setState(() {
+      _file = null;
+      _fileBytes = null;
+      _fileName = null;
+      _isFileSelected = false;
+    });
+  }
+
+  Future<void> _pickFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform
+          .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+      if (result != null) {
+        if (kIsWeb) {
+          // If running on web
+          setState(() {
+            _fileBytes = result.files.single.bytes;
+            _fileName = result.files.single.name;
+            _isFileSelected = true;
+          });
+        } else {
+          setState(() {
+            _file = File(result.files.single.path!);
+            _fileName = result.files.single.name;
+            _isFileSelected = true;
+          });
+        }
+      } else {
+        print('No file selected.');
+      }
+    } catch (e) {
+      print('Error picking file: $e');
+    }
+  }
+
+  Future<void> _uploadFile() async {
+    if (_file == null && _fileBytes == null) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      var uri = Uri.parse('http://192.168.1.11/login/api/upload.php');
+      var request = http.MultipartRequest('POST', uri);
+
+      if (kIsWeb) {
+        // If running on web
+        var multipartFile = http.MultipartFile.fromBytes(
+          'file',
+          _fileBytes!,
+          filename: _fileName,
+        );
+        request.files.add(multipartFile);
+      } else {
+        var stream = http.ByteStream(_file!.openRead());
+        var length = await _file!.length();
+        var multipartFile = http.MultipartFile('file', stream, length,
+            filename: basename(_file!.path));
+        request.files.add(multipartFile);
+      }
+
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        print('File uploaded successfully.');
+      } else {
+        print('File upload failed.');
+      }
+    } catch (e) {
+      print('Error uploading file: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +130,7 @@ class UploadBAPP1 extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header row with icon and title
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
@@ -70,52 +163,68 @@ class UploadBAPP1 extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             // Container for file upload area
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.green.withOpacity(0.5),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: const Offset(0, 3), // Changes position of shadow
+            Stack(
+              children: [
+                GestureDetector(
+                  onTap: _pickFile,
+                  child: Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3), // Changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: _file == null && _fileBytes == null
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add_photo_alternate,
+                                  size: 50,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Your work\nNot submitted',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Text(_fileName ?? ''),
+                    ),
                   ),
-                ],
-              ),
-              child: const Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add_photo_alternate,
-                      size: 50,
-                      color: Colors.grey,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Your work\nNot submitted',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
                 ),
-              ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: IconButton(
+                    onPressed: _clearFile,
+                    icon: Icon(Icons.clear),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            // Submit button
-            const SizedBox(height: 16),
+
+            SizedBox(height: 16),
             // Note section
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Color.fromARGB(255, 202, 202, 202), // Border color
@@ -124,7 +233,7 @@ class UploadBAPP1 extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -144,30 +253,31 @@ class UploadBAPP1 extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Implement submit button functionality here
-                },
+                onPressed: _isLoading || !_isFileSelected ? null : _uploadFile,
                 style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   backgroundColor: Colors.green,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0), // Border color
                   ),
                 ),
-                child: const Text(
-                  'Submit',
-                  style: TextStyle(color: Colors.white),
-                ),
+                child: _isLoading
+                    ? CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      )
+                    : Text(
+                        'Submit',
+                        style: TextStyle(color: Colors.white),
+                      ),
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNav(), // Custom bottom navigation bar
+      bottomNavigationBar: BottomNav(), // Custom bottom navigation bar
     );
   }
 }

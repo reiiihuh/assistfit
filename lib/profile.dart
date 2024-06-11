@@ -3,9 +3,72 @@ import 'package:mockup_assistfit/bottomnavbar.dart';
 import 'package:mockup_assistfit/edit.dart';
 import 'package:mockup_assistfit/help.dart';
 import 'package:mockup_assistfit/login.dart';
+import 'shared_preferences_helper.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class ProfilePage extends StatefulWidget {
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String? userName;
+  Map<String, dynamic> profil = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+    _loadProfil();
+  }
+
+  // Function to load user name from SharedPreferences
+  Future<void> _loadUserName() async {
+    String? name = await SharedPreferencesHelper.getUserName();
+    setState(() {
+      userName = name ?? "Pengguna";
+    });
+  }
+
+  Future<void> _loadProfil() async {
+    int? userId = await SharedPreferencesHelper.getUserId();
+    if (userId != null) {
+      try {
+        var response = await http.post(
+          Uri.parse('http://192.168.1.11/login/api/get_profil.php'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, int>{
+            'user_id': userId,
+          }),
+        );
+
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+
+        if (response.statusCode == 200) {
+          var responseBody = json.decode(response.body);
+
+          if (responseBody['value'] == 1) {
+            setState(() {
+              profil = responseBody['profil']
+                  [0]; // Ambil elemen pertama jika profilData adalah List
+            });
+          } else {
+            print('Unexpected response value: ${responseBody['value']}');
+          }
+        } else {
+          print('Failed to load profil, status code: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Error loading profil: $e');
+      }
+    } else {
+      print('User ID is null');
+    }
+  }
 
   void _showLogoutConfirmation(BuildContext context) {
     showDialog(
@@ -62,7 +125,7 @@ class ProfilePage extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const Center(
+              Center(
                 child: Column(
                   children: [
                     CircleAvatar(
@@ -71,7 +134,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'Ahra Dhanindya',
+                      '$userName',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -81,19 +144,19 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              const ProfileDetail(
+              ProfileDetail(
                 label: 'Email SSO',
-                value: 'reihan@student.telkomuniversity.ac.id',
+                value: profil['email'] ?? '',
               ),
               const SizedBox(height: 10),
-              const ProfileDetail(
+              ProfileDetail(
                 label: 'Phone Number',
-                value: '0881024111000',
+                value: profil['no_telp'] ?? '',
               ),
               const SizedBox(height: 10),
-              const ProfileDetail(
+              ProfileDetail(
                 label: 'Account Number',
-                value: '778899102233',
+                value: profil['no_rek'] ?? '',
               ),
               const SizedBox(height: 30),
               ProfileAction(

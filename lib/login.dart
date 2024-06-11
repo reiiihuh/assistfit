@@ -134,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                                       try {
                                         var response = await http.post(
                                           Uri.parse(
-                                              'http://10.60.40.211/login/api/login.php'),
+                                              'http://192.168.1.11/login/api/login.php'),
                                           headers: <String, String>{
                                             'Content-Type':
                                                 'application/json; charset=UTF-8',

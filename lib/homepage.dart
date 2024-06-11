@@ -4,8 +4,70 @@ import 'package:mockup_assistfit/download.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'upload.dart'; // Import the upload.dart file
 import 'honor.dart';
+import 'shared_preferences_helper.dart'; // Import SharedPreferencesHelper
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String? userName;
+  List<dynamic> jadwalList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+    _loadJadwal();
+  }
+
+  // Function to load user name from SharedPreferences
+  Future<void> _loadUserName() async {
+    String? name = await SharedPreferencesHelper.getUserName();
+    setState(() {
+      userName = name ?? "Pengguna";
+    });
+  }
+
+  // Function to load jadwal from API
+  Future<void> _loadJadwal() async {
+    int? userId = await SharedPreferencesHelper.getUserId();
+    if (userId != null) {
+      try {
+        var response = await http.post(
+          Uri.parse('http://10.60.40.211/login/api/get_jadwal.php'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, int>{
+            'user_id': userId,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          var responseBody = json.decode(response.body);
+
+          if (responseBody['value'] == 1) {
+            setState(() {
+              jadwalList = responseBody['jadwal'];
+            });
+          } else {
+            print('Unexpected response value: ${responseBody['value']}');
+          }
+        } else {
+          print('Failed to load jadwal, status code: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Error loading jadwal: $e');
+      }
+    } else {
+      print('User ID is null');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +109,7 @@ class HomePage extends StatelessWidget {
                     children: [
                       // Top section with title
                       Text(
-                        'Selamat Datang, Ahra!',
+                        'Selamat Datang, $userName!',
                         style: TextStyle(
                           fontSize: 24.0,
                           fontWeight: FontWeight.bold,
@@ -67,11 +129,11 @@ class HomePage extends StatelessWidget {
                           child: Column(
                             children: [
                               TableCalendar(
-                                focusedDay: DateTime(2024, 5, 16),
+                                focusedDay: DateTime.now(),
                                 firstDay: DateTime(2020),
                                 lastDay: DateTime(2030),
                                 selectedDayPredicate: (day) =>
-                                    isSameDay(day, DateTime(2024, 5, 16)),
+                                    isSameDay(day, DateTime.now()),
                                 calendarFormat: CalendarFormat.week,
                                 headerStyle: HeaderStyle(
                                   formatButtonVisible: false,
@@ -94,46 +156,64 @@ class HomePage extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(height: 2.0),
-                              Text(
-                                'Arsitektur dan Jaringan Komputer',
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                              if (jadwalList.isNotEmpty)
+                                ...jadwalList.map((jadwal) {
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        jadwal['mata_kuliah'] ?? '',
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8.0),
+                                      Text(
+                                        'Kelas: ${jadwal['kelas'] ?? ''}',
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8.0),
+                                      Text(
+                                        'Ruangan: ${jadwal['ruangan'] ?? ''}',
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8.0),
+                                      Text(
+                                        'Jam Mulai: ${jadwal['jam_mulai'] ?? ''}',
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8.0),
+                                      Text(
+                                        'Jam Selesai: ${jadwal['jam_selesai'] ?? ''}',
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8.0),
+                                    ],
+                                  );
+                                }).toList()
+                              else
+                                Text(
+                                  'Tidak ada jadwal tersedia.',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(height: 8.0),
-                              Text(
-                                'Kelas: D3-SI 47-04',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              SizedBox(height: 8.0),
-                              Text(
-                                'Ruangan: B1',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              SizedBox(height: 8.0),
-                              Text(
-                                'Jam Mulai: 12:30',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              SizedBox(height: 8.0),
-                              Text(
-                                'Jam Selesai: 16:30',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.black,
-                                ),
-                              ),
                             ],
                           ),
                         ),

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'bottomnavbar.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:convert';
 
 void main() {
   runApp(MyApp());
@@ -26,6 +27,7 @@ class UploadBAPP1 extends StatefulWidget {
 }
 
 class _UploadBAPP1State extends State<UploadBAPP1> {
+  bool _isSubmitted = false;
   File? _file;
   Uint8List? _fileBytes;
   bool _isLoading = false;
@@ -68,7 +70,7 @@ class _UploadBAPP1State extends State<UploadBAPP1> {
     }
   }
 
-  Future<void> _uploadFile() async {
+  Future<void> _uploadFile(BuildContext context) async {
     if (_file == null && _fileBytes == null) return;
 
     setState(() {
@@ -76,7 +78,7 @@ class _UploadBAPP1State extends State<UploadBAPP1> {
     });
 
     try {
-      var uri = Uri.parse('http://192.168.1.11/login/api/upload.php');
+      var uri = Uri.parse('http://10.60.40.69/login/api/upload.php');
       var request = http.MultipartRequest('POST', uri);
 
       if (kIsWeb) {
@@ -98,13 +100,91 @@ class _UploadBAPP1State extends State<UploadBAPP1> {
       var response = await request.send();
 
       if (response.statusCode == 200) {
-        print('File uploaded successfully.');
+        // Jika file berhasil diupload, setel _isSubmitted menjadi true
+        setState(() {
+          _isSubmitted = true;
+        });
+        // Tampilkan snackbar notifikasi bahwa file berhasil diupload
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('File berhasil diupload.'),
+            backgroundColor: Colors.green,
+          ),
+        );
       } else {
-        print('File upload failed.');
+        // Jika file gagal diupload, tampilkan snackbar dengan pesan error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('File gagal diupload.'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
+      // Tangani kesalahan jika terjadi saat upload file
       print('Error uploading file: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error uploading file: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
+      // Setel isLoading kembali ke false setelah proses upload selesai
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _unsubmitFile(BuildContext context) async {
+    try {
+      // Kirim permintaan ke server untuk menghapus file dari database menggunakan delete.php
+      var url = Uri.parse('http://10.60.40.69/login/api/delete.php');
+      var response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'id': 3, // Ganti dengan ID file yang ingin Anda hapus
+        }),
+      );
+      if (response.statusCode == 200) {
+        // Jika file berhasil dihapus dari database
+        setState(() {
+          // Atur kembali status _isSubmitted menjadi false
+          _isSubmitted = false;
+          // Bersihkan informasi file yang diunggah sebelumnya
+          _clearFile();
+        });
+        // Tampilkan snackbar notifikasi bahwa file berhasil di unsubmit
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('File berhasil dihapus.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        // Jika terjadi kesalahan saat menghapus file dari database, tampilkan snackbar dengan pesan error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('File gagal dihapus.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      // Tangani kesalahan jika terjadi saat menghapus file dari database
+      print('Error unsubmitting file: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error unsubmitting file: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      // Setel isLoading kembali ke false setelah proses unsubmit file selesai
       setState(() {
         _isLoading = false;
       });
@@ -256,12 +336,18 @@ class _UploadBAPP1State extends State<UploadBAPP1> {
             SizedBox(height: 16),
             Center(
               child: ElevatedButton(
-                onPressed: _isLoading || !_isFileSelected ? null : _uploadFile,
+                onPressed: _isLoading || !_isFileSelected
+                    ? null
+                    : _isSubmitted
+                        ? () => _unsubmitFile(
+                            context) // Panggil _unsubmitFile dengan menyertakan context
+                        : () => _uploadFile(
+                            context), // Panggil _uploadFile dengan menyertakan context
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  backgroundColor: Colors.green,
+                  backgroundColor: _isSubmitted ? Colors.red : Colors.green,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0), // Border color
+                    borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
                 child: _isLoading
@@ -269,7 +355,7 @@ class _UploadBAPP1State extends State<UploadBAPP1> {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       )
                     : Text(
-                        'Submit',
+                        _isSubmitted ? 'Unsubmit' : 'Submit',
                         style: TextStyle(color: Colors.white),
                       ),
               ),

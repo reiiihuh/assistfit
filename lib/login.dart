@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'homepage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'shared_preferences_helper.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -133,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                                       try {
                                         var response = await http.post(
                                           Uri.parse(
-                                              'http://192.168.1.11/login/api/login.php'),
+                                              'http://10.60.40.211/login/api/login.php'),
                                           headers: <String, String>{
                                             'Content-Type':
                                                 'application/json; charset=UTF-8',
@@ -149,6 +150,16 @@ class _LoginPageState extends State<LoginPage> {
 
                                         if (response.statusCode == 200 &&
                                             responseBody['value'] == 1) {
+                                          // Simpan nama pengguna ke SharedPreferences
+                                          String userName =
+                                              responseBody['user']['nama'];
+                                          int userId = int.parse(
+                                              responseBody['user']['id']);
+                                          await SharedPreferencesHelper
+                                              .setUserName(userName);
+                                          await SharedPreferencesHelper
+                                              .setUserId(userId);
+
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(

@@ -1,7 +1,72 @@
 import 'package:flutter/material.dart';
 import 'bottomnavbar.dart';
+import 'shared_preferences_helper.dart'; // Import SharedPreferencesHelper
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class HonorPage extends StatelessWidget {
+class HonorPage extends StatefulWidget {
+  @override
+  State<HonorPage> createState() => _HonorPageState();
+}
+
+class _HonorPageState extends State<HonorPage> {
+  String? userName;
+  Map<String, dynamic> honor = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+    _loadHonor();
+  }
+
+  // Function to load user name from SharedPreferences
+  Future<void> _loadUserName() async {
+    String? name = await SharedPreferencesHelper.getUserName();
+    setState(() {
+      userName = name ?? "Pengguna";
+    });
+  }
+
+  Future<void> _loadHonor() async {
+    int? userId = await SharedPreferencesHelper.getUserId();
+    if (userId != null) {
+      try {
+        var response = await http.post(
+          Uri.parse('http://192.168.1.11/login/api/get_honor.php'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, int>{
+            'user_id': userId,
+          }),
+        );
+
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+
+        if (response.statusCode == 200) {
+          var responseBody = json.decode(response.body);
+
+          if (responseBody['value'] == 1) {
+            setState(() {
+              honor = responseBody['honor']
+                  [0]; // Ambil elemen pertama jika profilData adalah List
+            });
+          } else {
+            print('Unexpected response value: ${responseBody['value']}');
+          }
+        } else {
+          print('Failed to load profil, status code: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Error loading profil: $e');
+      }
+    } else {
+      print('User ID is null');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,13 +120,13 @@ class HonorPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 20),
-                      Text('Tanggal Dikirim: DD/MM/YY'),
-                      Text('No. Rekening: 000000000'),
-                      Text('Nama: SSSSSSSSS'),
-                      Text('Bank: ABC'),
-                      Text('Jumlah hari: 0'),
-                      Text('Jumlah Jam: 0'),
-                      Text('Tarif Per Jam: 0'),
+                      Text('Tanggal Dikirim: ${honor['tgl_dikirim'] ?? ''}'),
+                      Text('No. Rekening: ${honor['no_rek'] ?? ''}'),
+                      Text('Nama: ${honor['nama'] ?? ''}'),
+                      Text('Bank: ${honor['bank'] ?? ''}'),
+                      Text('Jumlah hari: ${honor['jumlah_hari'] ?? ''}'),
+                      Text('Jumlah Jam: ${honor['jumlah_jam'] ?? ''}'),
+                      Text('Tarif Per Jam: ${honor['tarif_perjam'] ?? ''}'),
                       SizedBox(height: 20),
                       Center(
                         child: ElevatedButton(
